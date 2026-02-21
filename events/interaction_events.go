@@ -1,6 +1,10 @@
 package events
 
 import (
+	"sync"
+
+	"github.com/disgoorg/snowflake/v2"
+
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/rest"
 )
@@ -8,11 +12,45 @@ import (
 // InteractionResponderFunc is a function that can be used to respond to a discord.Interaction.
 type InteractionResponderFunc func(responseType discord.InteractionResponseType, data discord.InteractionResponseData, opts ...rest.RequestOpt) error
 
+// InteractionResponseState is a thread-safe state tracker for interaction responses.
+type InteractionResponseState struct {
+	Mu                sync.RWMutex
+	ResponseTypeValue *discord.InteractionResponseType
+}
+
+func NewInteractionResponseState() *InteractionResponseState {
+	return &InteractionResponseState{}
+}
+
+func (s *InteractionResponseState) ResponseType() *discord.InteractionResponseType {
+	if s == nil {
+		return nil
+	}
+	s.Mu.RLock()
+	defer s.Mu.RUnlock()
+	if s.ResponseTypeValue == nil {
+		return nil
+	}
+	responseType := *s.ResponseTypeValue
+	return &responseType
+}
+
+func (s *InteractionResponseState) IsDefferedReply() bool {
+	responseType := s.ResponseType()
+	return responseType != nil && *responseType == discord.InteractionResponseTypeDeferredCreateMessage
+}
+
+func (s *InteractionResponseState) IsDefferedUpdate() bool {
+	responseType := s.ResponseType()
+	return responseType != nil && *responseType == discord.InteractionResponseTypeDeferredUpdateMessage
+}
+
 // InteractionCreate indicates that a new interaction has been created.
 type InteractionCreate struct {
 	*GenericEvent
 	discord.Interaction
-	Respond InteractionResponderFunc
+	Respond       InteractionResponderFunc
+	ResponseState *InteractionResponseState
 }
 
 // Guild returns the guild that the interaction happened in if it happened in a guild.
@@ -25,11 +63,52 @@ func (e *InteractionCreate) Guild() (discord.Guild, bool) {
 	return discord.Guild{}, false
 }
 
+func (e *InteractionCreate) ResponseType() *discord.InteractionResponseType {
+	return e.ResponseState.ResponseType()
+}
+
+func (e *InteractionCreate) IsDefferedReply() bool {
+	return e.ResponseState.IsDefferedReply()
+}
+
+func (e *InteractionCreate) IsDefferedUpdate() bool {
+	return e.ResponseState.IsDefferedUpdate()
+}
+
+func (e *InteractionCreate) GetInteractionResponse(opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.GetInteractionResponse(e.ApplicationID(), e.Token(), opts...)
+}
+
+func (e *InteractionCreate) UpdateInteractionResponse(messageUpdate discord.MessageUpdate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.UpdateInteractionResponse(e.ApplicationID(), e.Token(), messageUpdate, opts...)
+}
+
+func (e *InteractionCreate) DeleteInteractionResponse(opts ...rest.RequestOpt) error {
+	return e.Client().Rest.DeleteInteractionResponse(e.ApplicationID(), e.Token(), opts...)
+}
+
+func (e *InteractionCreate) GetFollowupMessage(messageID snowflake.ID, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.GetFollowupMessage(e.ApplicationID(), e.Token(), messageID, opts...)
+}
+
+func (e *InteractionCreate) CreateFollowupMessage(messageCreate discord.MessageCreate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.CreateFollowupMessage(e.ApplicationID(), e.Token(), messageCreate, opts...)
+}
+
+func (e *InteractionCreate) UpdateFollowupMessage(messageID snowflake.ID, messageUpdate discord.MessageUpdate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.UpdateFollowupMessage(e.ApplicationID(), e.Token(), messageID, messageUpdate, opts...)
+}
+
+func (e *InteractionCreate) DeleteFollowupMessage(messageID snowflake.ID, opts ...rest.RequestOpt) error {
+	return e.Client().Rest.DeleteFollowupMessage(e.ApplicationID(), e.Token(), messageID, opts...)
+}
+
 // ApplicationCommandInteractionCreate is the base struct for all application command interaction create events.
 type ApplicationCommandInteractionCreate struct {
 	*GenericEvent
 	discord.ApplicationCommandInteraction
-	Respond InteractionResponderFunc
+	Respond       InteractionResponderFunc
+	ResponseState *InteractionResponseState
 }
 
 // Guild returns the guild that the interaction happened in if it happened in a guild.
@@ -40,6 +119,46 @@ func (e *ApplicationCommandInteractionCreate) Guild() (discord.Guild, bool) {
 		return e.Client().Caches.Guild(*e.GuildID())
 	}
 	return discord.Guild{}, false
+}
+
+func (e *ApplicationCommandInteractionCreate) ResponseType() *discord.InteractionResponseType {
+	return e.ResponseState.ResponseType()
+}
+
+func (e *ApplicationCommandInteractionCreate) IsDefferedReply() bool {
+	return e.ResponseState.IsDefferedReply()
+}
+
+func (e *ApplicationCommandInteractionCreate) IsDefferedUpdate() bool {
+	return e.ResponseState.IsDefferedUpdate()
+}
+
+func (e *ApplicationCommandInteractionCreate) GetInteractionResponse(opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.GetInteractionResponse(e.ApplicationID(), e.Token(), opts...)
+}
+
+func (e *ApplicationCommandInteractionCreate) UpdateInteractionResponse(messageUpdate discord.MessageUpdate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.UpdateInteractionResponse(e.ApplicationID(), e.Token(), messageUpdate, opts...)
+}
+
+func (e *ApplicationCommandInteractionCreate) DeleteInteractionResponse(opts ...rest.RequestOpt) error {
+	return e.Client().Rest.DeleteInteractionResponse(e.ApplicationID(), e.Token(), opts...)
+}
+
+func (e *ApplicationCommandInteractionCreate) GetFollowupMessage(messageID snowflake.ID, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.GetFollowupMessage(e.ApplicationID(), e.Token(), messageID, opts...)
+}
+
+func (e *ApplicationCommandInteractionCreate) CreateFollowupMessage(messageCreate discord.MessageCreate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.CreateFollowupMessage(e.ApplicationID(), e.Token(), messageCreate, opts...)
+}
+
+func (e *ApplicationCommandInteractionCreate) UpdateFollowupMessage(messageID snowflake.ID, messageUpdate discord.MessageUpdate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.UpdateFollowupMessage(e.ApplicationID(), e.Token(), messageID, messageUpdate, opts...)
+}
+
+func (e *ApplicationCommandInteractionCreate) DeleteFollowupMessage(messageID snowflake.ID, opts ...rest.RequestOpt) error {
+	return e.Client().Rest.DeleteFollowupMessage(e.ApplicationID(), e.Token(), messageID, opts...)
 }
 
 // Acknowledge acknowledges the interaction.
@@ -89,7 +208,8 @@ func (e *ApplicationCommandInteractionCreate) LaunchActivity(opts ...rest.Reques
 type ComponentInteractionCreate struct {
 	*GenericEvent
 	discord.ComponentInteraction
-	Respond InteractionResponderFunc
+	Respond       InteractionResponderFunc
+	ResponseState *InteractionResponseState
 }
 
 // Guild returns the guild that the interaction happened in if it happened in a guild.
@@ -100,6 +220,46 @@ func (e *ComponentInteractionCreate) Guild() (discord.Guild, bool) {
 		return e.Client().Caches.Guild(*e.GuildID())
 	}
 	return discord.Guild{}, false
+}
+
+func (e *ComponentInteractionCreate) ResponseType() *discord.InteractionResponseType {
+	return e.ResponseState.ResponseType()
+}
+
+func (e *ComponentInteractionCreate) IsDefferedReply() bool {
+	return e.ResponseState.IsDefferedReply()
+}
+
+func (e *ComponentInteractionCreate) IsDefferedUpdate() bool {
+	return e.ResponseState.IsDefferedUpdate()
+}
+
+func (e *ComponentInteractionCreate) GetInteractionResponse(opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.GetInteractionResponse(e.ApplicationID(), e.Token(), opts...)
+}
+
+func (e *ComponentInteractionCreate) UpdateInteractionResponse(messageUpdate discord.MessageUpdate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.UpdateInteractionResponse(e.ApplicationID(), e.Token(), messageUpdate, opts...)
+}
+
+func (e *ComponentInteractionCreate) DeleteInteractionResponse(opts ...rest.RequestOpt) error {
+	return e.Client().Rest.DeleteInteractionResponse(e.ApplicationID(), e.Token(), opts...)
+}
+
+func (e *ComponentInteractionCreate) GetFollowupMessage(messageID snowflake.ID, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.GetFollowupMessage(e.ApplicationID(), e.Token(), messageID, opts...)
+}
+
+func (e *ComponentInteractionCreate) CreateFollowupMessage(messageCreate discord.MessageCreate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.CreateFollowupMessage(e.ApplicationID(), e.Token(), messageCreate, opts...)
+}
+
+func (e *ComponentInteractionCreate) UpdateFollowupMessage(messageID snowflake.ID, messageUpdate discord.MessageUpdate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.UpdateFollowupMessage(e.ApplicationID(), e.Token(), messageID, messageUpdate, opts...)
+}
+
+func (e *ComponentInteractionCreate) DeleteFollowupMessage(messageID snowflake.ID, opts ...rest.RequestOpt) error {
+	return e.Client().Rest.DeleteFollowupMessage(e.ApplicationID(), e.Token(), messageID, opts...)
 }
 
 // Acknowledge acknowledges the interaction.
@@ -159,7 +319,8 @@ func (e *ComponentInteractionCreate) LaunchActivity(opts ...rest.RequestOpt) err
 type AutocompleteInteractionCreate struct {
 	*GenericEvent
 	discord.AutocompleteInteraction
-	Respond InteractionResponderFunc
+	Respond       InteractionResponderFunc
+	ResponseState *InteractionResponseState
 }
 
 // Guild returns the guild that the interaction happened in if it happened in a guild.
@@ -170,6 +331,18 @@ func (e *AutocompleteInteractionCreate) Guild() (discord.Guild, bool) {
 		return e.Client().Caches.Guild(*e.GuildID())
 	}
 	return discord.Guild{}, false
+}
+
+func (e *AutocompleteInteractionCreate) ResponseType() *discord.InteractionResponseType {
+	return e.ResponseState.ResponseType()
+}
+
+func (e *AutocompleteInteractionCreate) IsDefferedReply() bool {
+	return e.ResponseState.IsDefferedReply()
+}
+
+func (e *AutocompleteInteractionCreate) IsDefferedUpdate() bool {
+	return e.ResponseState.IsDefferedUpdate()
 }
 
 // Acknowledge acknowledges the interaction.
@@ -200,7 +373,8 @@ func (e *AutocompleteInteractionCreate) AutocompleteResult(choices []discord.Aut
 type ModalSubmitInteractionCreate struct {
 	*GenericEvent
 	discord.ModalSubmitInteraction
-	Respond InteractionResponderFunc
+	Respond       InteractionResponderFunc
+	ResponseState *InteractionResponseState
 }
 
 // Guild returns the guild that the interaction happened in if it happened in a guild.
@@ -211,6 +385,46 @@ func (e *ModalSubmitInteractionCreate) Guild() (discord.Guild, bool) {
 		return e.Client().Caches.Guild(*e.GuildID())
 	}
 	return discord.Guild{}, false
+}
+
+func (e *ModalSubmitInteractionCreate) ResponseType() *discord.InteractionResponseType {
+	return e.ResponseState.ResponseType()
+}
+
+func (e *ModalSubmitInteractionCreate) IsDefferedReply() bool {
+	return e.ResponseState.IsDefferedReply()
+}
+
+func (e *ModalSubmitInteractionCreate) IsDefferedUpdate() bool {
+	return e.ResponseState.IsDefferedUpdate()
+}
+
+func (e *ModalSubmitInteractionCreate) GetInteractionResponse(opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.GetInteractionResponse(e.ApplicationID(), e.Token(), opts...)
+}
+
+func (e *ModalSubmitInteractionCreate) UpdateInteractionResponse(messageUpdate discord.MessageUpdate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.UpdateInteractionResponse(e.ApplicationID(), e.Token(), messageUpdate, opts...)
+}
+
+func (e *ModalSubmitInteractionCreate) DeleteInteractionResponse(opts ...rest.RequestOpt) error {
+	return e.Client().Rest.DeleteInteractionResponse(e.ApplicationID(), e.Token(), opts...)
+}
+
+func (e *ModalSubmitInteractionCreate) GetFollowupMessage(messageID snowflake.ID, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.GetFollowupMessage(e.ApplicationID(), e.Token(), messageID, opts...)
+}
+
+func (e *ModalSubmitInteractionCreate) CreateFollowupMessage(messageCreate discord.MessageCreate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.CreateFollowupMessage(e.ApplicationID(), e.Token(), messageCreate, opts...)
+}
+
+func (e *ModalSubmitInteractionCreate) UpdateFollowupMessage(messageID snowflake.ID, messageUpdate discord.MessageUpdate, opts ...rest.RequestOpt) (*discord.Message, error) {
+	return e.Client().Rest.UpdateFollowupMessage(e.ApplicationID(), e.Token(), messageID, messageUpdate, opts...)
+}
+
+func (e *ModalSubmitInteractionCreate) DeleteFollowupMessage(messageID snowflake.ID, opts ...rest.RequestOpt) error {
+	return e.Client().Rest.DeleteFollowupMessage(e.ApplicationID(), e.Token(), messageID, opts...)
 }
 
 // Acknowledge acknowledges the interaction.
