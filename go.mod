@@ -1,4 +1,4 @@
-module github.com/disgoorg/disgo
+module github.com/x1xo/disgo
 
 go 1.24.0
 

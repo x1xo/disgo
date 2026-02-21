@@ -1,6 +1,6 @@
 # oauth2
 
-[OAuth2](https://discord.com/developers/docs/topics/oauth2) module of [disgo](https://github.com/disgoorg/disgo)
+[OAuth2](https://discord.com/developers/docs/topics/oauth2) module of [disgo](https://github.com/x1xo/disgo)
 
 ## Getting Started
 

@@ -1,8 +1,8 @@
-[![Go Reference](https://pkg.go.dev/badge/github.com/disgoorg/disgo.svg)](https://pkg.go.dev/github.com/disgoorg/disgo)
-[![Go Report](https://goreportcard.com/badge/github.com/disgoorg/disgo)](https://goreportcard.com/report/github.com/disgoorg/disgo)
+[![Go Reference](https://pkg.go.dev/badge/github.com/x1xo/disgo.svg)](https://pkg.go.dev/github.com/x1xo/disgo)
+[![Go Report](https://goreportcard.com/badge/github.com/x1xo/disgo)](https://goreportcard.com/report/github.com/x1xo/disgo)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/disgoorg/disgo)](https://golang.org/doc/devel/release.html)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/disgoorg/disgo/blob/master/LICENSE)
-[![DisGo Version](https://img.shields.io/github/v/tag/disgoorg/disgo?label=release)](https://github.com/disgoorg/disgo/releases/latest)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/x1xo/disgo/blob/master/LICENSE)
+[![DisGo Version](https://img.shields.io/github/v/tag/disgoorg/disgo?label=release)](https://github.com/x1xo/disgo/releases/latest)
 [![DisGo Discord](https://discord.com/api/guilds/817327181659111454/widget.png)](https://discord.gg/TewhTfDpvW)
 
 <img align="right" src="/.github/discord_gopher.png" width=192 alt="discord gopher">
@@ -52,14 +52,14 @@ After v1 is released breaking changes may only happen if the Discord API require
 
 ### Missing Features
 
-* [RPC](https://discord.com/developers/docs/topics/rpc) (https://github.com/disgoorg/disgo/pull/170)
+* [RPC](https://discord.com/developers/docs/topics/rpc) (https://github.com/x1xo/disgo/pull/170)
 
 ## Getting Started
 
 ### Installing
 
 ```sh
-$ go get github.com/disgoorg/disgo
+$ go get github.com/x1xo/disgo
 ```
 
 ### Building a DisGo Instance
@@ -74,10 +74,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/disgoorg/disgo"
-	"github.com/disgoorg/disgo/bot"
-	"github.com/disgoorg/disgo/events"
-	"github.com/disgoorg/disgo/gateway"
+	"github.com/x1xo/disgo"
+	"github.com/x1xo/disgo/bot"
+	"github.com/x1xo/disgo/events"
+	"github.com/x1xo/disgo/gateway"
 )
 
 func main() {
@@ -112,7 +112,7 @@ func main() {
 
 ### Full Ping Pong Example
 
-A full Ping Pong example can also be found [here](https://github.com/disgoorg/disgo/blob/master/_examples/ping_pong/example.go)
+A full Ping Pong example can also be found [here](https://github.com/x1xo/disgo/blob/master/_examples/ping_pong/example.go)
 
 ### Logging
 
@@ -122,20 +122,20 @@ DisGo uses [slog](https://pkg.go.dev/log/slog) for logging.
 
 Documentation is wip and can be found under
 
-* [![Go Reference](https://pkg.go.dev/badge/github.com/disgoorg/disgo.svg)](https://pkg.go.dev/github.com/disgoorg/disgo)
+* [![Go Reference](https://pkg.go.dev/badge/github.com/x1xo/disgo.svg)](https://pkg.go.dev/github.com/x1xo/disgo)
 * [![Discord Documentation](https://img.shields.io/badge/Discord%20Documentation-blue.svg)](https://discord.com/developers/docs)
 
 GitHub Wiki is currently under construction. We appreciate help here.
 
 ## Examples
 
-You can find examples [here](https://github.com/disgoorg/disgo/tree/master/_examples)
+You can find examples [here](https://github.com/x1xo/disgo/tree/master/_examples)
 
 There is also a bot template with commands & db [here](https://github.com/disgoorg/bot-template)
 
 or in these projects:
 
-* [DisGo-Butler](https://github.com/disgoorg/disgo-butler)
+* [DisGo-Butler](https://github.com/x1xo/disgo-butler)
 * [Reddit-Discord-Bot](https://github.com/TopiSenpai/Reddit-Discord-Bot)
 * [Kitsune-Bot](https://github.com/TopiSenpai/Kitsune-Bot)
 * [KittyBot](https://github.com/KittyBot-Org/KittyBotGo)
@@ -149,11 +149,11 @@ or in these projects:
 
 ### [Lavalink](https://github.com/freyacodes/Lavalink)
 
-Is a standalone audio sending node based on [Lavaplayer](https://github.com/sedmelluq/lavaplayer) and JDA-Audio. Which allows for sending audio without it ever reaching any of your shards. Lavalink can be used in combination with [DisGolink](https://github.com/disgoorg/disgolink) for music Bots
+Is a standalone audio sending node based on [Lavaplayer](https://github.com/sedmelluq/lavaplayer) and JDA-Audio. Which allows for sending audio without it ever reaching any of your shards. Lavalink can be used in combination with [DisGolink](https://github.com/x1xo/disgolink) for music Bots
 
 Being used in production by FredBoat, Dyno, LewdBot, and more.
 
-### [DisGolink](https://github.com/disgoorg/disgolink)
+### [DisGolink](https://github.com/x1xo/disgolink)
 
 Is a [Lavalink-Client](https://github.com/freyacodes/Lavalink) which can be used to communicate with Lavalink to play/search tracks
 
@@ -174,7 +174,7 @@ Contributions are welcomed but for bigger changes we recommend first reaching ou
 
 ## License
 
-Distributed under the [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/disgoorg/disgo/blob/master/LICENSE). See LICENSE for more information.
+Distributed under the [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/x1xo/disgo/blob/master/LICENSE). See LICENSE for more information.
 
 ## Supported by Jetbrains
 

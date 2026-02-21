@@ -1,9 +1,9 @@
-module github.com/disgoorg/disgo/_examples/application_commands/http
+module github.com/x1xo/disgo/_examples/application_commands/http
 
 go 1.24.0
 
 require (
-	github.com/disgoorg/disgo v0.19.0-rc.14
+	github.com/x1xo/disgo v0.19.0-rc.14
 	github.com/disgoorg/snowflake/v2 v2.0.3
 	github.com/oasisprotocol/curve25519-voi v0.0.0-20251114093237-2ab5a27a1729
 )

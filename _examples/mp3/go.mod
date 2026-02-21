@@ -1,9 +1,9 @@
-module github.com/disgoorg/disgo/_examples/mp3
+module github.com/x1xo/disgo/_examples/mp3
 
 go 1.24.0
 
 require (
-	github.com/disgoorg/disgo v0.19.2
+	github.com/x1xo/disgo v0.19.2
 	github.com/disgoorg/godave v0.1.0
 	github.com/disgoorg/snowflake/v2 v2.0.3
 	github.com/hajimehoshi/go-mp3 v0.3.4
